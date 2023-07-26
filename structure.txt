@@ -1,0 +1,71 @@
+.
+├── env.yaml                        # 项目依赖
+├── requirement.txt                 # 项目依赖
+├── main.py
+├── README.md
+├── routers
+│   ├── config.py
+│   ├── HR_VITON_main               # HR_VITON 项目
+│   │   ├── checkpoints
+│   │   ├── cp_dataset.py
+│   │   ├── cp_dataset_test.py
+│   │   ├── data                    # 数据集路径
+│   │   │   └── zalando-hd-resize
+│   │   │       └── test
+│   │   │           ├── agnostic-v3.2
+│   │   │           ├── cloth
+│   │   │           ├── cloth-mask
+│   │   │           ├── image
+│   │   │           ├── image-densepose
+│   │   │           ├── image-parse-agnostic-v3.2
+│   │   │           ├── image-parse-v3
+│   │   │           ├── openpose_img
+│   │   │           └── openpose_json
+│   │   ├── eval_models
+│   │   │   ├── base_model.py
+│   │   │   ├── dist_model.py
+│   │   │   ├── __init__.py
+│   │   │   ├── networks_basic.py
+│   │   │   ├── pretrained_networks.py
+│   │   │   └── weights             # 模型路径
+│   │   │       └── v0.1
+│   │   │           ├── gen.pth
+│   │   │           └── mtviton.pth
+│   │   ├── evaluate.py
+│   │   ├── figures
+│   │   │   └── fig.jpg
+│   │   ├── get_norm_const.py
+│   │   ├── get_parse_agnostic.py
+│   │   ├── __init__.py
+│   │   ├── network_generator.py
+│   │   ├── networks.py
+│   │   ├── prepare_input.py        # 生成最终图片工具类
+│   │   ├── Preprocessing.md
+│   │   ├── README.md
+│   │   ├── sync_batchnorm
+│   │   │   ├── batchnorm.py
+│   │   │   ├── batchnorm_reimpl.py
+│   │   │   ├── comm.py
+│   │   │   ├── __init__.py
+│   │   │   ├── replicate.py
+│   │   │   └── unittest.py
+│   │   ├── test_condition.py
+│   │   ├── test_generator.py
+│   │   ├── train_condition.py
+│   │   ├── train_generator.py
+│   │   └── utils.py
+│   ├── __init__.py
+│   └── tryon_tool
+│       ├── get_cloth_mask.py       # 生成 mask 工具类
+│       └── __init__.py
+├── static
+│   ├── current_model.jpg
+│   ├── finalimg.png
+│   ├── index.js
+│   ├── style.css
+│   └── tmp.jpg
+├── structure.txt
+└── templates
+    ├── fileUpload_cloth.html
+    ├── main.html
+    └── view.html
