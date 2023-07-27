@@ -1,4 +1,6 @@
+
 import random
+from asyncio import sleep
 from pathlib import Path
 
 from aiofiles import open as aopen
@@ -75,12 +77,15 @@ async def get_tryon(request: Request, model_name: str = Depends(set_model)):
             model_name, img_array, img_mask_array)
         tryon_bytes = tryon_tool.test()
         if isinstance(tryon_bytes, bytes):
-            async with aopen('./static/finalimg.png', 'wb') as f:
-                await f.write(tryon_bytes)
-                gen_ok = True
+            Path('./static/finalimg.png').write_bytes(tryon_bytes)
+            gen_ok = True
+            # await sleep(.5)
             return templates.TemplateResponse(
-                'view.html', {
+                'main.html', {
                     "request": request,
+                    "model_name": model_name,
+                    "upload_ok": upload_ok,
+                    "gen_ok": gen_ok
                 }
             )
         gen_ok = False
@@ -133,9 +138,10 @@ async def upload(request: Request, file: UploadFile):
         gen_ok = False
 
     return templates.TemplateResponse(
-        'fileUpload_cloth.html', {
+        'main.html', {
             "request": request,
-            "pic_name": pic_name,
-            "route": f'/{route_name}'
+            "model_name": current_model,
+            "upload_ok": upload_ok,
+            "gen_ok": gen_ok
         }
     )

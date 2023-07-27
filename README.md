@@ -23,6 +23,10 @@
 
 ### 展示区
 
+<center>
+    <img src="./static/show_1.jpeg" width=300/><img src="./static/show_2.jpeg" width=300/>
+</center>
+
 ---
 
 ## &#x20;项目环境
@@ -38,8 +42,8 @@
 
 ### &#x20; env.yaml 和 requirements.txt
 
-* env.yaml -> conda  (指定使用 **tsinghua** 和 **bfsu ，如果下载速度慢可自己更换** )
-* requirements.txt -> pip
+* env.yaml $\rightarrow$ conda  (指定使用 **tsinghua** 和 **bfsu ，如果下载速度慢可自己更换** )
+* requirements.txt $\rightarrow$ pip
 
 分两个依赖是因为 `conda` 和 `pip` 有些包不同。为了避免依赖包冲突，请按下述步骤创建环境并安装依赖（大牛请随意）。
 执行下述步骤前，确认已经安装好`conda`环境。将本项目克隆到本地，打开终端并进入到项目根路径。
@@ -59,7 +63,7 @@ pip install -r requirements.txt
 
 ```
 
-==*pytorch 及其相关包冲突导致异常比较常见，最好不要使用多个源安装依赖*==
+*pytorch 及其相关包冲突导致异常比较常见，最好不要使用多个源安装依赖*
 
 ## &#x20;项目目录结构
 
@@ -68,7 +72,7 @@ pip install -r requirements.txt
 ```bash
 .
 ├── env.yaml                        # conda 项目依赖
-├── requirement.txt                 # pip 项目依赖
+├── requirements.txt                 # pip 项目依赖
 ├── main.py                         # 项目启动脚本
 ├── README.md
 ├── routers
@@ -142,6 +146,12 @@ pip install -r requirements.txt
 
 ## 相关下载
 
+    待上传...
+
+* [routers\HR_VITON_main\eval_models\weights\v0.1\gen.pth]()
+* [routers\HR_VITON_main\eval_models\weights\v0.1\mtviton.pth]()
+* [routers\HR_VITON_main\data]()
+
 ## 启动程序
 
 进入项目根目录，打开终端并确认已切换至刚才新创建的 conda 环境，执行 main.py 文件。
@@ -151,7 +161,7 @@ python -c "print('You must be kidding...')"
 
 ```
 
-打开浏览器访问 `http://localhost:8000/Try_On_API/`，尝试上传上衣图片、更换模特、生成试穿图片等操作。由于html页面完全由后端生成，默认情况浏览器可能不会看到刷新后的页面，打开开发者模式，禁用缓存或者使用插件实现禁用缓存。注意使用页面提供的后退按钮，浏览器的后退可能还会使用缓存页面。
+打开浏览器访问 `http://localhost:8000/Try_On_API/`，尝试上传上衣图片、更换模特、生成试穿图片等操作。由于html页面完全由后端生成，默认情况浏览器可能不会看到刷新后的页面，打开开发者模式，禁用缓存或者使用插件实现禁用缓存。
 
 ## &#x20;鸣谢
 
@@ -168,6 +178,25 @@ python -c "print('You must be kidding...')"
 
 ## &#x20;题外话
 
-> 选择在`Linux`系统下开发，主要是因为 `detectron2` 不支持 `Windows OS`，如果后续集成相关功能减少不必要的麻烦
+> 选择在 `Linux` 系统下开发，主要是因为 `detectron2` 不支持 `Windows`，如果后续集成相关功能可以减少不必要的麻烦
 
-> 自定义试穿模特（比如使用个人照片）需要做很多额外的工作，正如 [HR-VITON](https://github.com/sangyun884/HR-VITON) 开发者在 [Preprocessing for HR-VITON](https://github.com/sangyun884/HR-VITON/blob/main/Preprocessing.md) 提到的，比如使用 [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) 生成 `key_points` json 数据（在linux环境下需要自己编译 Openpose）；然后是 `Human Parsing`，原文中基于 [CIHP\_PGN](https://github.com/Engineering-Course/CIHP_PGN) 实现，但是这个项目基于 `tensorflow` 实现的，所以如果你需要集成这个项目，你不得不同时安装两个大型框架，即使它们的功能在某种程度上是一样的。当然，你也可以参考 [TryYours-Virtual-Try-On](https://github.com/lastdefiance20/TryYours-Virtual-Try-On) 开发者的方案，使用 [Graphonomy](https://github.com/Gaoyiminggithub/Graphonomy) 实现 `Human Parsing`，我在测试过程中采用了这个方案，因为 `Graphonomy` 是基于 `pytorch` 实现的；还有接下来基于 [detectron2](https://github.com/facebookresearch/detectron2) 子模块 `densepose` 获取`Densepose` json数据（`detectron2`可能需要在本地编译安装，取决于 `pytorch` 版本，由于 `2.0` 版本官方未提供预编译包，只能手动编译安装）。除此之外，你需要把这些项目命令行接口封装成工具类，下载项目所需的模型、数据集（在大陆实现这些还是相当麻烦的）。
+> 自定义试穿模特（比如使用个人照片）需要做很多额外的工作，正如 [HR-VITON](https://github.com/sangyun884/HR-VITON) 开发者在 [Preprocessing for HR-VITON](https://github.com/sangyun884/HR-VITON/blob/main/Preprocessing.md) 提到的，比如使用 [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) 生成 `key_points` json 数据（在linux环境下需要自己编译 Openpose）；然后是 `Human Parsing`，原文中基于 [CIHP\_PGN](https://github.com/Engineering-Course/CIHP_PGN) 实现，但是这个项目基于 `tensorflow` 实现的，所以如果你需要集成这个项目，你不得不同时安装两个大型框架，即使它们的功能在某种程度上是一样的。当然，你也可以参考 [TryYours-Virtual-Try-On](https://github.com/lastdefiance20/TryYours-Virtual-Try-On) 开发者的方案，使用 [Graphonomy](https://github.com/Gaoyiminggithub/Graphonomy) 实现 `Human Parsing`，我在测试过程中采用了这个方案，因为 `Graphonomy` 是基于 `pytorch` 实现的；还有接下来基于 [detectron2](https://github.com/facebookresearch/detectron2) 子模块 `densepose` 获取 `Densepose` json数据（`detectron2`可能需要在本地编译安装，取决于 `pytorch` 版本，由于 `2.0` 版本官方未提供预编译包，只能手动编译安装）。除此之外，你需要把这些项目命令行接口封装成工具类，下载项目所需的模型、数据集（在大陆实现这些还是相当麻烦的）。
+
+> 测试页面比较简陋，如果你实在无法忍受可以考虑帮我优化一下（给你点赞 :joy:）。试穿的效果可能很多时候也不尽人意，目前爱莫能助。这个小项目还有很多可以优化的地方，比如：
+>>
+>> * 虽然集成了异步 web 后端框架，但是封装的工具类未采用异步方式
+>> * 未采用任务队列，意味着现在不支持多用户并发使用
+>> * 未使用 cuda 导致性能较低，生成图片期间 cpu 占用率和内存占用率都会大幅上升
+>> * 待补充
+
+> 通过这个项目我有哪些收获：
+>>
+>> 1. 项目集成是这个项目的主要工作，将命令行脚本封装成工具类。需要解决项目环境、项目依赖、优化模块导入路径，如何尽可能减少重复读写等问题
+>> 2. 学习 PIL/OpenCV 处理图片数据，和 Numpy Array、bytes 对象之间的转化
+>> 3. 复习 + 学习 fastapi
+>> 4. 复习 + 学习 markdown，学习 HTML、CSS 页面布局（虽然简陋但比从上到下强点）
+>> 5. 在 github 上创建的首个正式项目
+
+## 下一步
+
+I am still thinking...
