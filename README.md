@@ -146,11 +146,11 @@ pip install -r requirements.txt
 
 ## 相关下载
 
-    待上传...
+数据来源 [VITON-HD](https://github.com/shadow2496/VITON-HD) ，转载仅为提供方便下载，你也可以直接到原项目下载。
 
-* [routers\HR_VITON_main\eval_models\weights\v0.1\gen.pth]()
-* [routers\HR_VITON_main\eval_models\weights\v0.1\mtviton.pth]()
-* [routers\HR_VITON_main\data]()
+* [routers\HR_VITON_main\eval_models\weights\v0.1\gen.pth](https://pan.quark.cn/s/212909e4f89d) $\rightarrow$ 提取码：Emzx
+* [routers\HR_VITON_main\eval_models\weights\v0.1\mtviton.pth](https://pan.quark.cn/s/9f6e559d2d5b) $\rightarrow$ 提取码：Lvz3
+* [routers\HR_VITON_main\data](https://pan.quark.cn/s/3a319891f200) $\rightarrow$ 提取码：vwVr
 
 ## 启动程序
 
@@ -174,13 +174,13 @@ python -c "print('You must be kidding...')"
 * [cloths_segmentation](https://github.com/ternaus/cloths_segmentation) 本项目基于该框架生成上衣 mask 图像
 * [Graphonomy](https://github.com/Gaoyiminggithub/Graphonomy)、[Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose)、[detectron2](https://github.com/facebookresearch/detectron2) 虽然目前本项目没有集成这些项目作为工具类，但是我在本地测试时分别基于这些项目做了相关功能测试
 
-***如果您发现本项目使用了您开发的工具、框架、数据集等任何而没有提及，还请原谅！请联系我（<++blt23@126.com>++）并告知相关信息，我会尽快处理。再次感谢！***
+***如果您发现本项目使用了您开发的工具、框架、数据集等任何而没有提及，还请原谅！请联系我（<blt23@126.com>）并告知相关信息，我会尽快处理。再次感谢！***
 
 ## &#x20;题外话
 
 > 选择在 `Linux` 系统下开发，主要是因为 `detectron2` 不支持 `Windows`，如果后续集成相关功能可以减少不必要的麻烦
 
-> 自定义试穿模特（比如使用个人照片）需要做很多额外的工作，正如 [HR-VITON](https://github.com/sangyun884/HR-VITON) 开发者在 [Preprocessing for HR-VITON](https://github.com/sangyun884/HR-VITON/blob/main/Preprocessing.md) 提到的，比如使用 [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) 生成 `key_points` json 数据（在linux环境下需要自己编译 Openpose）；然后是 `Human Parsing`，原文中基于 [CIHP\_PGN](https://github.com/Engineering-Course/CIHP_PGN) 实现，但是这个项目基于 `tensorflow` 实现的，所以如果你需要集成这个项目，你不得不同时安装两个大型框架，即使它们的功能在某种程度上是一样的。当然，你也可以参考 [TryYours-Virtual-Try-On](https://github.com/lastdefiance20/TryYours-Virtual-Try-On) 开发者的方案，使用 [Graphonomy](https://github.com/Gaoyiminggithub/Graphonomy) 实现 `Human Parsing`，我在测试过程中采用了这个方案，因为 `Graphonomy` 是基于 `pytorch` 实现的；还有接下来基于 [detectron2](https://github.com/facebookresearch/detectron2) 子模块 `densepose` 获取 `Densepose` json数据（`detectron2`可能需要在本地编译安装，取决于 `pytorch` 版本，由于 `2.0` 版本官方未提供预编译包，只能手动编译安装）。除此之外，你需要把这些项目命令行接口封装成工具类，下载项目所需的模型、数据集（在大陆实现这些还是相当麻烦的）。
+> 自定义试穿模特（比如使用个人照片）需要做很多额外的工作，正如 [HR-VITON](https://github.com/sangyun884/HR-VITON) 开发者在 [Preprocessing for HR-VITON](https://github.com/sangyun884/HR-VITON/blob/main/Preprocessing.md) 提到的，比如使用 [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) 生成 `key_points` json 数据（在linux环境下需要自己编译 Openpose）；然后是 `Human Parsing`，原文中基于 [CIHP\_PGN](https://github.com/Engineering-Course/CIHP_PGN) 实现，但是这个项目基于 `tensorflow` 实现的，所以如果你需要集成这个项目，你不得不同时安装两个大型框架，即使它们的功能在某种程度上是一样的。当然，你也可以参考 [TryYours-Virtual-Try-On](https://github.com/lastdefiance20/TryYours-Virtual-Try-On) 开发者的方案，使用 [Graphonomy](https://github.com/Gaoyiminggithub/Graphonomy) 实现 `Human Parsing`，我在测试过程中采用了这个方案，因为 `Graphonomy` 是基于 `pytorch` 实现的；还有接下来基于 [detectron2](https://github.com/facebookresearch/detectron2) 子模块 `densepose` 获取 `Densepose` json数据（`detectron2`可能需要在本地编译安装，取决于 `pytorch` 版本，由于 `2.0` 版本官方未提供预编译包，只能手动编译安装）。除此之外，你需要把这些项目命令行接口封装成工具类，下载项目所需的模型、数据集（在大陆实现这些还是相当麻烦的）
 
 > 测试页面比较简陋，如果你实在无法忍受可以考虑帮我优化一下（给你点赞 :joy:）。试穿的效果可能很多时候也不尽人意，目前爱莫能助。这个小项目还有很多可以优化的地方，比如：
 >>
@@ -196,6 +196,8 @@ python -c "print('You must be kidding...')"
 >> 3. 复习 + 学习 fastapi
 >> 4. 复习 + 学习 markdown，学习 HTML、CSS 页面布局（虽然简陋但比从上到下强点）
 >> 5. 在 github 上创建的首个正式项目
+
+> 如果你对深度学习或者换装项目感兴趣，推荐你了解一下`“鸣谢”`部分提到的相关项目
 
 ## 下一步
 
