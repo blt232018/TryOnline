@@ -167,8 +167,7 @@ class SPADEResBlock(nn.Module):
     def shortcut(self, x, seg, misalign_mask):
         if self.learned_shortcut:
             return self.conv_s(self.norm_s(x, seg, misalign_mask))
-        else:
-            return x
+        return x
 
     def forward(self, x, seg, misalign_mask=None):
         seg = F.interpolate(seg, size=x.size()[2:], mode='nearest')
@@ -307,8 +306,7 @@ class NLayerDiscriminator(BaseNetwork):
         get_intermediate_features = not self.no_ganFeat_loss
         if get_intermediate_features:
             return results[1:]
-        else:
-            return results[-1]
+        return results[-1]
 
 
 class MultiscaleDiscriminator(BaseNetwork):
@@ -366,11 +364,10 @@ class GANLoss(nn.Module):
                 self.real_label_tensor = self.Tensor(1).fill_(self.real_label)
                 self.real_label_tensor.requires_grad_(False)
             return self.real_label_tensor.expand_as(input)
-        else:
-            if self.fake_label_tensor is None:
-                self.fake_label_tensor = self.Tensor(1).fill_(self.fake_label)
-                self.fake_label_tensor.requires_grad_(False)
-            return self.fake_label_tensor.expand_as(input)
+        if self.fake_label_tensor is None:
+            self.fake_label_tensor = self.Tensor(1).fill_(self.fake_label)
+            self.fake_label_tensor.requires_grad_(False)
+        return self.fake_label_tensor.expand_as(input)
 
     def get_zero_tensor(self, input):
         if self.zero_tensor is None:
@@ -383,10 +380,10 @@ class GANLoss(nn.Module):
             target_tensor = self.get_target_tensor(input, target_is_real)
             loss = F.binary_cross_entropy_with_logits(input, target_tensor)
             return loss
-        elif self.gan_mode == 'ls':
+        if self.gan_mode == 'ls':
             target_tensor = self.get_target_tensor(input, target_is_real)
             return F.mse_loss(input, target_tensor)
-        elif self.gan_mode == 'hinge':
+        if self.gan_mode == 'hinge':
             if for_discriminator:
                 if target_is_real:
                     minval = torch.min(input - 1, self.get_zero_tensor(input))
@@ -400,12 +397,10 @@ class GANLoss(nn.Module):
                         "The generator's hinge loss must be aiming for real")
                 loss = -torch.mean(input)
             return loss
-        else:
-            # wgan
-            if target_is_real:
-                return -input.mean()
-            else:
-                return input.mean()
+        # wgan
+        if target_is_real:
+            return -input.mean()
+        return input.mean()
 
     def __call__(self, input, target_is_real, for_discriminator=True):
         # computing loss is a bit complicated because |input| may not be
@@ -421,8 +416,7 @@ class GANLoss(nn.Module):
                 new_loss = torch.mean(loss_tensor.view(bs, -1), dim=1)
                 loss += new_loss
             return loss / len(input)
-        else:
-            return self.loss(input, target_is_real, for_discriminator)
+        return self.loss(input, target_is_real, for_discriminator)
 
 
 def get_nonspade_norm_layer(norm_type='instance'):
