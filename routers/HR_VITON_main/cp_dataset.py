@@ -194,14 +194,14 @@ class CPDataset(data.Dataset):
         new_parse_map = torch.FloatTensor(
             self.semantic_nc, self.fine_height, self.fine_width).zero_()
 
-        for i in range(len(labels)):
-            for label in labels[i][1]:
+        for i, item in enumerate(labels):
+            for label in item[1]:
                 new_parse_map[i] += parse_map[label]
 
         parse_onehot = torch.FloatTensor(
             1, self.fine_height, self.fine_width).zero_()
-        for i in range(len(labels)):
-            for label in labels[i][1]:
+        for i, item in enumerate(labels):
+            for label in item[1]:
                 parse_onehot[0] += parse_map[label] * i
 
         # load image-parse-agnostic
@@ -220,8 +220,8 @@ class CPDataset(data.Dataset):
             0, parse_agnostic, 1.0)
         new_parse_agnostic_map = torch.FloatTensor(
             self.semantic_nc, self.fine_height, self.fine_width).zero_()
-        for i in range(len(labels)):
-            for label in labels[i][1]:
+        for i, item in enumerate(labels):
+            for label in item[1]:
                 new_parse_agnostic_map[i] += parse_agnostic_map[label]
 
         # parse cloth & parse cloth mask
@@ -380,14 +380,14 @@ class CPDatasetTest(data.Dataset):
         new_parse_map = torch.FloatTensor(
             self.semantic_nc, self.fine_height, self.fine_width).zero_()
 
-        for i in range(len(labels)):
-            for label in labels[i][1]:
+        for i, item in enumerate(labels):
+            for label in item[1]:
                 new_parse_map[i] += parse_map[label]
 
         parse_onehot = torch.FloatTensor(
             1, self.fine_height, self.fine_width).zero_()
-        for i in range(len(labels)):
-            for label in labels[i][1]:
+        for i, item in enumerate(labels):
+            for label in item[1]:
                 parse_onehot[0] += parse_map[label] * i
 
         # load image-parse-agnostic
@@ -406,8 +406,8 @@ class CPDatasetTest(data.Dataset):
             0, parse_agnostic, 1.0)
         new_parse_agnostic_map = torch.FloatTensor(
             self.semantic_nc, self.fine_height, self.fine_width).zero_()
-        for i in range(len(labels)):
-            for label in labels[i][1]:
+        for i, item in enumerate(labels):
+            for label in item[1]:
                 new_parse_agnostic_map[i] += parse_agnostic_map[label]
 
         # parse cloth & parse cloth mask
