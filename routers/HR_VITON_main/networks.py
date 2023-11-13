@@ -212,6 +212,7 @@ class ResBlock(nn.Module):
     def __init__(self, in_nc, out_nc, scale='down', norm_layer=nn.BatchNorm2d):
         super(ResBlock, self).__init__()
         use_bias = norm_layer == nn.InstanceNorm2d
+
         if scale not in ['up', 'down', 'same']:
             raise AssertionError(
                 "ResBlock scale must be in 'up' 'down' 'same'")

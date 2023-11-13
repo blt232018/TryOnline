@@ -759,6 +759,7 @@ def main():
     if len(opt.gpu_ids) > 0:
         if not (torch.cuda.is_available()):
             raise AssertionError
+
         generator.cuda()
     generator.init_weights(opt.init_type, opt.init_variance)
     discriminator = create_network(MultiscaleDiscriminator, opt)
