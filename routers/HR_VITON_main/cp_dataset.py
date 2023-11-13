@@ -455,7 +455,7 @@ class CPDatasetTest(data.Dataset):
         return len(self.im_names)
 
 
-class CPDataLoader(object):
+class CPDataLoader:
     def __init__(self, opt, dataset):
         super(CPDataLoader, self).__init__()
 

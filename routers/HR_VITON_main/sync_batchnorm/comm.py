@@ -15,7 +15,7 @@ import threading
 __all__ = ['FutureResult', 'SlavePipe', 'SyncMaster']
 
 
-class FutureResult(object):
+class FutureResult:
     """A thread-safe future implementation. Used only as one-to-one pipe."""
 
     def __init__(self):
