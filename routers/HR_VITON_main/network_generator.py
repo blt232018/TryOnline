@@ -78,7 +78,8 @@ class SPADENorm(nn.Module):
         self.param_opt=opt
         self.noise_scale = nn.Parameter(torch.zeros(norm_nc))
 
-        assert norm_type.startswith('alias')
+        if not norm_type.startswith('alias'):
+            raise AssertionError
         param_free_norm_type = norm_type[len('alias'):]
         if param_free_norm_type == 'batch':
             self.param_free_norm = nn.BatchNorm2d(norm_nc, affine=False)
@@ -371,7 +372,8 @@ class GANLoss(nn.Module):
                     minval = torch.min(-input - 1, self.get_zero_tensor(input))
                     loss = -torch.mean(minval)
             else:
-                assert target_is_real, "The generator's hinge loss must be aiming for real"
+                if not target_is_real:
+                    raise AssertionError("The generator's hinge loss must be aiming for real")
                 loss = -torch.mean(input)
             return loss
         else:

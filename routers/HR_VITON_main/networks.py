@@ -172,7 +172,8 @@ class ResBlock(nn.Module):
     def __init__(self, in_nc, out_nc, scale='down', norm_layer=nn.BatchNorm2d):
         super(ResBlock, self).__init__()
         use_bias = norm_layer == nn.InstanceNorm2d
-        assert scale in ['up', 'down', 'same'], "ResBlock scale must be in 'up' 'down' 'same'"
+        if scale not in ['up', 'down', 'same']:
+            raise AssertionError("ResBlock scale must be in 'up' 'down' 'same'")
 
         if scale == 'same':
             self.scale = nn.Conv2d(in_nc, out_nc, kernel_size=1, bias=True)
@@ -449,7 +450,8 @@ def define_D(input_nc, ndf=64, n_layers_D=3, norm='instance', use_sigmoid=False,
     netD = MultiscaleDiscriminator(input_nc, ndf, n_layers_D, norm_layer, use_sigmoid, num_D, getIntermFeat, Ddownx2, Ddropout, spectral=spectral)
     print(netD)
     if len(gpu_ids) > 0:
-        assert (torch.cuda.is_available())
+        if not (torch.cuda.is_available()):
+            raise AssertionError
         netD.cuda()
     netD.apply(weights_init)
     return netD

@@ -62,7 +62,8 @@ def Evaluation(opt, pred_list, gt_list):
             
             gt_np = np.asarray(gt_img.convert('L'))
             pred_img = Image.open(os.path.join(opt.predict_dir, img_pred))
-            assert gt_img.size == pred_img.size, f"{gt_img.size} vs {pred_img.size}"
+            if gt_img.size != pred_img.size:
+                raise AssertionError(f"{gt_img.size} vs {pred_img.size}")
             pred_np = np.asarray(pred_img.convert('L'))
             avg_ssim += ssim(gt_np, pred_np, data_range=255, gaussian_weights=True, use_sample_covariance=False)
 

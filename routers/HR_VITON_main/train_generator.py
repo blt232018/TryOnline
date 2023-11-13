@@ -121,9 +121,9 @@ def get_opt():
     if len(opt.gpu_ids) > 0:
         torch.cuda.set_device(opt.gpu_ids[0])
 
-    assert len(opt.gpu_ids) == 0 or opt.batch_size % len(opt.gpu_ids) == 0, \
-        "Batch size %d is wrong. It must be a multiple of # GPUs %d." \
-        % (opt.batch_size, len(opt.gpu_ids))
+    if not (len(opt.gpu_ids) == 0 or opt.batch_size % len(opt.gpu_ids) == 0):
+        raise AssertionError("Batch size %d is wrong. It must be a multiple of # GPUs %d." \
+        % (opt.batch_size, len(opt.gpu_ids)))
 
     return opt
 
@@ -642,7 +642,8 @@ def main():
     generator = SPADEGenerator(opt, 3+3+3)
     generator.print_network()
     if len(opt.gpu_ids) > 0:
-        assert(torch.cuda.is_available())
+        if not (torch.cuda.is_available()):
+            raise AssertionError
         generator.cuda()
     generator.init_weights(opt.init_type, opt.init_variance)
     discriminator = create_network(MultiscaleDiscriminator, opt)

@@ -150,7 +150,8 @@ class FakeNet(nn.Module):
 class L2(FakeNet):
 
     def forward(self, in0, in1, retPerLayer=None):
-        assert(in0.size()[0]==1) # currently only supports batchSize 1
+        if (in0.size()[0] != 1):
+            raise AssertionError
 
         if(self.colorspace=='RGB'):
             (N,C,X,Y) = in0.size()
@@ -167,7 +168,8 @@ class L2(FakeNet):
 class DSSIM(FakeNet):
 
     def forward(self, in0, in1, retPerLayer=None):
-        assert(in0.size()[0]==1) # currently only supports batchSize 1
+        if (in0.size()[0] != 1):
+            raise AssertionError
 
         if(self.colorspace=='RGB'):
             value = util.dssim(1.*util.tensor2im(in0.data), 1.*util.tensor2im(in1.data), range=255.).astype('float')

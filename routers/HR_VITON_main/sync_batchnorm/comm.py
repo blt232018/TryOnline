@@ -25,7 +25,8 @@ class FutureResult(object):
 
     def put(self, result):
         with self._lock:
-            assert self._result is None, 'Previous result has\'t been fetched.'
+            if self._result is not None:
+                raise AssertionError('Previous result has\'t been fetched.')
             self._result = result
             self._cond.notify()
 
@@ -92,7 +93,8 @@ class SyncMaster(object):
 
         """
         if self._activated:
-            assert self._queue.empty(), 'Queue is not clean before next initialization.'
+            if not self._queue.empty():
+                raise AssertionError('Queue is not clean before next initialization.')
             self._activated = False
             self._registry.clear()
         future = FutureResult()
@@ -120,7 +122,8 @@ class SyncMaster(object):
             intermediates.append(self._queue.get())
 
         results = self._master_callback(intermediates)
-        assert results[0][0] == 0, 'The first result should belongs to the master.'
+        if results[0][0] != 0:
+            raise AssertionError('The first result should belongs to the master.')
 
         for i, res in results:
             if i == 0:
@@ -128,7 +131,8 @@ class SyncMaster(object):
             self._registry[i].result.put(res)
 
         for i in range(self.nr_slaves):
-            assert self._queue.get() is True
+            if self._queue.get() is not True:
+                raise AssertionError
 
         return results[0][1]
 
