@@ -120,7 +120,9 @@ class _SynchronizedBatchNorm(_BatchNorm):
     def _compute_mean_std(self, sum_, ssum, size):
         """Compute the mean and standard-deviation with sum and square-sum. This method
         also maintains the moving average on the master device."""
-        assert size > 1, 'BatchNorm computes unbiased standard-deviation, which requires size > 1.'
+        if size <= 1:
+            raise AssertionError(
+                'BatchNorm computes unbiased standard-deviation, which requires size > 1.')
         mean = sum_ / size
         sumvar = ssum - sum_ * mean
         unbias_var = sumvar / (size - 1)
