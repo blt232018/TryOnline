@@ -262,8 +262,8 @@ def test(opt, test_loader, tocg, generator):
             else:
                 parse = torch.FloatTensor(fake_parse.size(
                     0), 7, opt.fine_height, opt.fine_width).zero_()
-            for i in range(len(labels)):
-                for label in labels[i][1]:
+            for i, item in enumerate(labels):
+                for label in item[1]:
                     parse[:, i] += old_parse[:, label]
 
             # warped cloth

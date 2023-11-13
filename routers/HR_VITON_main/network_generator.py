@@ -295,8 +295,8 @@ class NLayerDiscriminator(BaseNetwork):
         sequence += [[nn.Conv2d(nf, 1, kernel_size=kw, stride=1, padding=pw)]]
 
         # We divide the layers into groups to extract intermediate layer outputs
-        for n in range(len(sequence)):
-            self.add_module('model' + str(n), nn.Sequential(*sequence[n]))
+        for n, item in enumerate(sequence):
+            self.add_module('model' + str(n), nn.Sequential(*item))
 
     def forward(self, input):
         results = [input]

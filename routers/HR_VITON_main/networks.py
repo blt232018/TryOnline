@@ -374,8 +374,8 @@ class MultiscaleDiscriminator(nn.Module):
     def singleD_forward(self, model, input):
         if self.getIntermFeat:
             result = [input]
-            for i in range(len(model)):
-                result.append(model[i](result[-1]))
+            for i, item in enumerate(model):
+                result.append(item(result[-1]))
             return result[1:]
         else:
             return [model(input)]
@@ -446,12 +446,12 @@ class NLayerDiscriminator(nn.Module):
             sequence += [[nn.Sigmoid()]]
 
         if getIntermFeat:
-            for n in range(len(sequence)):
-                setattr(self, 'model' + str(n), nn.Sequential(*sequence[n]))
+            for n, item in enumerate(sequence):
+                setattr(self, 'model' + str(n), nn.Sequential(*item))
         else:
             sequence_stream = []
-            for n in range(len(sequence)):
-                sequence_stream += sequence[n]
+            for n, item in enumerate(sequence):
+                sequence_stream += item
             self.model = nn.Sequential(*sequence_stream)
 
     def forward(self, input):
