@@ -511,7 +511,7 @@ def define_D(input_nc, ndf=64, n_layers_D=3, norm='instance', use_sigmoid=False,
                                    use_sigmoid, num_D, getIntermFeat, Ddownx2, Ddropout, spectral=spectral)
     print(netD)
     if len(gpu_ids) > 0:
-        if not (torch.cuda.is_available()):
+        if not torch.cuda.is_available():
             raise AssertionError
         netD.cuda()
     netD.apply(weights_init)

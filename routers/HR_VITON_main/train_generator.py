@@ -756,7 +756,7 @@ def main():
     generator = SPADEGenerator(opt, 3+3+3)
     generator.print_network()
     if len(opt.gpu_ids) > 0:
-        if not (torch.cuda.is_available()):
+        if not torch.cuda.is_available():
             raise AssertionError
 
         generator.cuda()
