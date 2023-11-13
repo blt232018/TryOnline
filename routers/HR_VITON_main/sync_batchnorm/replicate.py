@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 
-class CallbackContext(object):
+class CallbackContext:
     pass
 
 
