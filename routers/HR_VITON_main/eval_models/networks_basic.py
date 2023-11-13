@@ -1,16 +1,9 @@
 
 from __future__ import absolute_import
 
-import sys
-from pdb import set_trace as st
-
 import eval_models as util
-import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.init as init
-from IPython import embed
-from skimage import color
 from torch.autograd import Variable
 
 from . import pretrained_networks as pn

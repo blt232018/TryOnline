@@ -1,20 +1,13 @@
 
 from __future__ import absolute_import
 
-import fractions
-import functools
-import itertools
 import os
-import sys
 from collections import OrderedDict
 
 import eval_models as util
 import numpy as np
-import skimage.transform
 import torch
-from IPython import embed
 from scipy.ndimage import zoom
-from torch import nn
 from torch.autograd import Variable
 from tqdm import tqdm
 

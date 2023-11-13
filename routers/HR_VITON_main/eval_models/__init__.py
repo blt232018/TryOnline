@@ -5,7 +5,6 @@ import numpy as np
 import torch
 from eval_models import dist_model
 from skimage.metrics import structural_similarity as compare_ssim
-from torch.autograd import Variable
 
 
 class PerceptualLoss(torch.nn.Module):
