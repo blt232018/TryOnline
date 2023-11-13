@@ -3,13 +3,13 @@
 # Author : Jiayuan Mao
 # Email  : maojiayuan@gmail.com
 # Date   : 27/01/2018
-# 
+#
 # This file is part of Synchronized-BatchNorm-PyTorch.
 # https://github.com/vacancy/Synchronized-BatchNorm-PyTorch
 # Distributed under MIT License.
 
-import queue
 import collections
+import queue
 import threading
 
 __all__ = ['FutureResult', 'SlavePipe', 'SyncMaster']
@@ -41,7 +41,8 @@ class FutureResult(object):
 
 
 _MasterRegistry = collections.namedtuple('MasterRegistry', ['result'])
-_SlavePipeBase = collections.namedtuple('_SlavePipeBase', ['identifier', 'queue', 'result'])
+_SlavePipeBase = collections.namedtuple(
+    '_SlavePipeBase', ['identifier', 'queue', 'result'])
 
 
 class SlavePipe(_SlavePipeBase):
@@ -94,7 +95,8 @@ class SyncMaster(object):
         """
         if self._activated:
             if not self._queue.empty():
-                raise AssertionError('Queue is not clean before next initialization.')
+                raise AssertionError(
+                    'Queue is not clean before next initialization.')
             self._activated = False
             self._registry.clear()
         future = FutureResult()
@@ -123,7 +125,8 @@ class SyncMaster(object):
 
         results = self._master_callback(intermediates)
         if results[0][0] != 0:
-            raise AssertionError('The first result should belongs to the master.')
+            raise AssertionError(
+                'The first result should belongs to the master.')
 
         for i, res in results:
             if i == 0:

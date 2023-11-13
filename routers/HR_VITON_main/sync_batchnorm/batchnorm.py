@@ -12,9 +12,8 @@ import collections
 
 import torch
 import torch.nn.functional as F
-
 from torch.nn.modules.batchnorm import _BatchNorm
-from torch.nn.parallel._functions import ReduceAddCoalesced, Broadcast
+from torch.nn.parallel._functions import Broadcast, ReduceAddCoalesced
 
 from .comm import SyncMaster
 from .replicate import DataParallelWithCallback
@@ -33,13 +32,15 @@ def _unsqueeze_ft(tensor):
     return tensor.unsqueeze(0).unsqueeze(-1)
 
 
-_ChildMessage = collections.namedtuple('_ChildMessage', ['sum', 'ssum', 'sum_size'])
+_ChildMessage = collections.namedtuple(
+    '_ChildMessage', ['sum', 'ssum', 'sum_size'])
 _MasterMessage = collections.namedtuple('_MasterMessage', ['sum', 'inv_std'])
 
 
 class _SynchronizedBatchNorm(_BatchNorm):
     def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True):
-        super(_SynchronizedBatchNorm, self).__init__(num_features, eps=eps, momentum=momentum, affine=affine)
+        super(_SynchronizedBatchNorm, self).__init__(
+            num_features, eps=eps, momentum=momentum, affine=affine)
 
         self._sync_master = SyncMaster(self._data_parallel_master)
 
@@ -65,14 +66,17 @@ class _SynchronizedBatchNorm(_BatchNorm):
 
         # Reduce-and-broadcast the statistics.
         if self._parallel_id == 0:
-            mean, inv_std = self._sync_master.run_master(_ChildMessage(input_sum, input_ssum, sum_size))
+            mean, inv_std = self._sync_master.run_master(
+                _ChildMessage(input_sum, input_ssum, sum_size))
         else:
-            mean, inv_std = self._slave_pipe.run_slave(_ChildMessage(input_sum, input_ssum, sum_size))
+            mean, inv_std = self._slave_pipe.run_slave(
+                _ChildMessage(input_sum, input_ssum, sum_size))
 
         # Compute the output.
         if self.affine:
             # MJY:: Fuse the multiplication for speed.
-            output = (input - _unsqueeze_ft(mean)) * _unsqueeze_ft(inv_std * self.weight) + _unsqueeze_ft(self.bias)
+            output = (input - _unsqueeze_ft(mean)) * \
+                _unsqueeze_ft(inv_std * self.weight) + _unsqueeze_ft(self.bias)
         else:
             output = (input - _unsqueeze_ft(mean)) * _unsqueeze_ft(inv_std)
 
@@ -94,7 +98,8 @@ class _SynchronizedBatchNorm(_BatchNorm):
 
         # Always using same "device order" makes the ReduceAdd operation faster.
         # Thanks to:: Tete Xiao (http://tetexiao.com/)
-        intermediates = sorted(intermediates, key=lambda i: i[1].sum.get_device())
+        intermediates = sorted(
+            intermediates, key=lambda i: i[1].sum.get_device())
 
         to_reduce = [i[1][:2] for i in intermediates]
         to_reduce = [j for i in to_reduce for j in i]  # flatten
@@ -116,14 +121,17 @@ class _SynchronizedBatchNorm(_BatchNorm):
         """Compute the mean and standard-deviation with sum and square-sum. This method
         also maintains the moving average on the master device."""
         if size <= 1:
-            raise AssertionError('BatchNorm computes unbiased standard-deviation, which requires size > 1.')
+            raise AssertionError(
+                'BatchNorm computes unbiased standard-deviation, which requires size > 1.')
         mean = sum_ / size
         sumvar = ssum - sum_ * mean
         unbias_var = sumvar / (size - 1)
         bias_var = sumvar / size
 
-        self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * mean.data
-        self.running_var = (1 - self.momentum) * self.running_var + self.momentum * unbias_var.data
+        self.running_mean = (1 - self.momentum) * \
+            self.running_mean + self.momentum * mean.data
+        self.running_var = (1 - self.momentum) * \
+            self.running_var + self.momentum * unbias_var.data
 
         return mean, bias_var.clamp(self.eps) ** -0.5
 
@@ -317,15 +325,15 @@ class SynchronizedBatchNorm3d(_SynchronizedBatchNorm):
                              .format(input.dim()))
         super(SynchronizedBatchNorm3d, self)._check_input_dim(input)
 
-        
+
 def convert_model(module):
     """Traverse the input module and its child recursively
        and replace all instance of torch.nn.modules.batchnorm.BatchNorm*N*d
        to SynchronizedBatchNorm*N*d 
-        
+
     Args:
         module: the input module needs to be convert to SyncBN model
-        
+
     Examples:
         >>> import torch.nn as nn
         >>> import torchvision
@@ -340,7 +348,7 @@ def convert_model(module):
         mod = convert_model(mod)
         mod = DataParallelWithCallback(mod)
         return mod
-    
+
     mod = module
     for pth_module, sync_module in zip([torch.nn.modules.batchnorm.BatchNorm1d,
                                         torch.nn.modules.batchnorm.BatchNorm2d,
@@ -349,14 +357,15 @@ def convert_model(module):
                                         SynchronizedBatchNorm2d,
                                         SynchronizedBatchNorm3d]):
         if isinstance(module, pth_module):
-            mod = sync_module(module.num_features, module.eps, module.momentum, module.affine)
+            mod = sync_module(module.num_features, module.eps,
+                              module.momentum, module.affine)
             mod.running_mean = module.running_mean
             mod.running_var = module.running_var
             if module.affine:
                 mod.weight.data = module.weight.data.clone().detach()
                 mod.bias.data = module.bias.data.clone().detach()
-            
+
     for name, child in module.named_children():
         mod.add_module(name, convert_model(child))
-    
+
     return mod
