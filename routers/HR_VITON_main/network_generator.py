@@ -1,9 +1,9 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
 from torch.nn.utils import spectral_norm
-import numpy as np
 
 
 class BaseNetwork(nn.Module):
@@ -39,7 +39,8 @@ class BaseNetwork(nn.Module):
                 elif init_type == 'none':  # uses pytorch's default init method
                     m.reset_parameters()
                 else:
-                    raise NotImplementedError("initialization method '{}' is not implemented".format(init_type))
+                    raise NotImplementedError(
+                        "initialization method '{}' is not implemented".format(init_type))
                 if hasattr(m, 'bias') and m.bias is not None:
                     init.constant_(m.bias.data, 0.0)
 
@@ -60,7 +61,8 @@ class MaskNorm(nn.Module):
 
         num_pixels = mask.sum((2, 3), keepdim=True)  # size: (b, 1, 1, 1)
         num_pixels[num_pixels == 0] = 1
-        mu = region.sum((2, 3), keepdim=True) / num_pixels  # size: (b, c, 1, 1)
+        mu = region.sum((2, 3), keepdim=True) / \
+            num_pixels  # size: (b, c, 1, 1)
 
         normalized_region = self.norm_layer(region + (1 - mask) * mu)
         return normalized_region * torch.sqrt(num_pixels / (h * w))
@@ -73,9 +75,9 @@ class MaskNorm(nn.Module):
 
 
 class SPADENorm(nn.Module):
-    def __init__(self,opt, norm_type, norm_nc, label_nc):
+    def __init__(self, opt, norm_type, norm_nc, label_nc):
         super(SPADENorm, self).__init__()
-        self.param_opt=opt
+        self.param_opt = opt
         self.noise_scale = nn.Parameter(torch.zeros(norm_nc))
 
         assert norm_type.startswith('alias')
@@ -88,24 +90,29 @@ class SPADENorm(nn.Module):
             self.param_free_norm = MaskNorm(norm_nc)
         else:
             raise ValueError(
-                "'{}' is not a recognized parameter-free normalization type in SPADENorm".format(param_free_norm_type)
+                "'{}' is not a recognized parameter-free normalization type in SPADENorm".format(
+                    param_free_norm_type)
             )
 
         nhidden = 128
         ks = 3
         pw = ks // 2
-        self.conv_shared = nn.Sequential(nn.Conv2d(label_nc, nhidden, kernel_size=ks, padding=pw), nn.ReLU())
-        self.conv_gamma = nn.Conv2d(nhidden, norm_nc, kernel_size=ks, padding=pw)
-        self.conv_beta = nn.Conv2d(nhidden, norm_nc, kernel_size=ks, padding=pw)
+        self.conv_shared = nn.Sequential(
+            nn.Conv2d(label_nc, nhidden, kernel_size=ks, padding=pw), nn.ReLU())
+        self.conv_gamma = nn.Conv2d(
+            nhidden, norm_nc, kernel_size=ks, padding=pw)
+        self.conv_beta = nn.Conv2d(
+            nhidden, norm_nc, kernel_size=ks, padding=pw)
 
     def forward(self, x, seg, misalign_mask=None):
         # Part 1. Generate parameter-free normalized activations.
         b, c, h, w = x.size()
-        if self.param_opt.cuda :
-            noise = (torch.randn(b, w, h, 1).cuda() * self.noise_scale).transpose(1, 3)
+        if self.param_opt.cuda:
+            noise = (torch.randn(b, w, h, 1).cuda() *
+                     self.noise_scale).transpose(1, 3)
         else:
-            noise = (torch.randn(b, w, h, 1)* self.noise_scale).transpose(1, 3)
-
+            noise = (torch.randn(b, w, h, 1) *
+                     self.noise_scale).transpose(1, 3)
 
         if misalign_mask is None:
             normalized = self.param_free_norm(x + noise)
@@ -125,14 +132,15 @@ class SPADENorm(nn.Module):
 class SPADEResBlock(nn.Module):
     def __init__(self, opt, input_nc, output_nc, use_mask_norm=True):
         super(SPADEResBlock, self).__init__()
-        self.param_opt=opt
+        self.param_opt = opt
         self.learned_shortcut = (input_nc != output_nc)
         middle_nc = min(input_nc, output_nc)
 
         self.conv_0 = nn.Conv2d(input_nc, middle_nc, kernel_size=3, padding=1)
         self.conv_1 = nn.Conv2d(middle_nc, output_nc, kernel_size=3, padding=1)
         if self.learned_shortcut:
-            self.conv_s = nn.Conv2d(input_nc, output_nc, kernel_size=1, bias=False)
+            self.conv_s = nn.Conv2d(
+                input_nc, output_nc, kernel_size=1, bias=False)
 
         subnorm_type = opt.norm_G
         if subnorm_type.startswith('spectral'):
@@ -147,10 +155,11 @@ class SPADEResBlock(nn.Module):
             subnorm_type = 'aliasmask'
             gen_semantic_nc = gen_semantic_nc + 1
 
-        self.norm_0 = SPADENorm(opt,subnorm_type, input_nc, gen_semantic_nc)
-        self.norm_1 = SPADENorm(opt,subnorm_type, middle_nc, gen_semantic_nc)
+        self.norm_0 = SPADENorm(opt, subnorm_type, input_nc, gen_semantic_nc)
+        self.norm_1 = SPADENorm(opt, subnorm_type, middle_nc, gen_semantic_nc)
         if self.learned_shortcut:
-            self.norm_s = SPADENorm(opt,subnorm_type, input_nc, gen_semantic_nc)
+            self.norm_s = SPADENorm(
+                opt, subnorm_type, input_nc, gen_semantic_nc)
 
         self.relu = nn.LeakyReLU(0.2)
 
@@ -163,7 +172,8 @@ class SPADEResBlock(nn.Module):
     def forward(self, x, seg, misalign_mask=None):
         seg = F.interpolate(seg, size=x.size()[2:], mode='nearest')
         if misalign_mask is not None:
-            misalign_mask = F.interpolate(misalign_mask, size=x.size()[2:], mode='nearest')
+            misalign_mask = F.interpolate(
+                misalign_mask, size=x.size()[2:], mode='nearest')
 
         x_s = self.shortcut(x, seg, misalign_mask)
 
@@ -177,25 +187,33 @@ class SPADEGenerator(BaseNetwork):
     def __init__(self, opt, input_nc):
         super(SPADEGenerator, self).__init__()
         self.num_upsampling_layers = opt.num_upsampling_layers
-        self.param_opt=opt
+        self.param_opt = opt
         self.sh, self.sw = self.compute_latent_vector_size(opt)
 
         nf = opt.ngf
         self.conv_0 = nn.Conv2d(input_nc, nf * 16, kernel_size=3, padding=1)
         for i in range(1, 8):
-            self.add_module('conv_{}'.format(i), nn.Conv2d(input_nc, 16, kernel_size=3, padding=1))
+            self.add_module('conv_{}'.format(i), nn.Conv2d(
+                input_nc, 16, kernel_size=3, padding=1))
 
         self.head_0 = SPADEResBlock(opt, nf * 16, nf * 16, use_mask_norm=False)
 
-        self.G_middle_0 = SPADEResBlock(opt, nf * 16 + 16, nf * 16, use_mask_norm=False)
-        self.G_middle_1 = SPADEResBlock(opt, nf * 16 + 16, nf * 16, use_mask_norm=False)
+        self.G_middle_0 = SPADEResBlock(
+            opt, nf * 16 + 16, nf * 16, use_mask_norm=False)
+        self.G_middle_1 = SPADEResBlock(
+            opt, nf * 16 + 16, nf * 16, use_mask_norm=False)
 
-        self.up_0 = SPADEResBlock(opt, nf * 16 + 16, nf * 8, use_mask_norm=False)
-        self.up_1 = SPADEResBlock(opt, nf * 8 + 16, nf * 4, use_mask_norm=False)
-        self.up_2 = SPADEResBlock(opt, nf * 4 + 16, nf * 2, use_mask_norm=False)
-        self.up_3 = SPADEResBlock(opt, nf * 2 + 16, nf * 1, use_mask_norm=False)
+        self.up_0 = SPADEResBlock(
+            opt, nf * 16 + 16, nf * 8, use_mask_norm=False)
+        self.up_1 = SPADEResBlock(
+            opt, nf * 8 + 16, nf * 4, use_mask_norm=False)
+        self.up_2 = SPADEResBlock(
+            opt, nf * 4 + 16, nf * 2, use_mask_norm=False)
+        self.up_3 = SPADEResBlock(
+            opt, nf * 2 + 16, nf * 1, use_mask_norm=False)
         if self.num_upsampling_layers == 'most':
-            self.up_4 = SPADEResBlock(opt, nf * 1 + 16, nf // 2, use_mask_norm=False)
+            self.up_4 = SPADEResBlock(
+                opt, nf * 1 + 16, nf // 2, use_mask_norm=False)
             nf = nf // 2
 
         self.conv_img = nn.Conv2d(nf, 3, kernel_size=3, padding=1)
@@ -212,15 +230,18 @@ class SPADEGenerator(BaseNetwork):
         elif self.num_upsampling_layers == 'most':
             num_up_layers = 7
         else:
-            raise ValueError("opt.num_upsampling_layers '{}' is not recognized".format(self.num_upsampling_layers))
+            raise ValueError("opt.num_upsampling_layers '{}' is not recognized".format(
+                self.num_upsampling_layers))
 
         sh = opt.fine_height // 2**num_up_layers
         sw = opt.fine_width // 2**num_up_layers
         return sh, sw
 
     def forward(self, x, seg):
-        samples = [F.interpolate(x, size=(self.sh * 2**i, self.sw * 2**i), mode='nearest') for i in range(8)]
-        features = [self._modules['conv_{}'.format(i)](samples[i]) for i in range(8)]
+        samples = [F.interpolate(
+            x, size=(self.sh * 2**i, self.sw * 2**i), mode='nearest') for i in range(8)]
+        features = [self._modules['conv_{}'.format(i)](
+            samples[i]) for i in range(8)]
 
         x = self.head_0(features[0], seg)
         x = self.up(x)
@@ -246,7 +267,8 @@ class SPADEGenerator(BaseNetwork):
 ########################################################################
 
 ########################################################################
-    
+
+
 class NLayerDiscriminator(BaseNetwork):
 
     def __init__(self, opt):
@@ -314,7 +336,8 @@ class MultiscaleDiscriminator(BaseNetwork):
             input = self.downsample(input)
 
         return result
-    
+
+
 class GANLoss(nn.Module):
     def __init__(self, gan_mode, target_real_label=1.0, target_fake_label=0.0, tensor=torch.FloatTensor):
         super(GANLoss, self).__init__()
@@ -389,7 +412,8 @@ class GANLoss(nn.Module):
             for pred_i in input:
                 if isinstance(pred_i, list):
                     pred_i = pred_i[-1]
-                loss_tensor = self.loss(pred_i, target_is_real, for_discriminator)
+                loss_tensor = self.loss(
+                    pred_i, target_is_real, for_discriminator)
                 bs = 1 if len(loss_tensor.size()) == 0 else loss_tensor.size(0)
                 new_loss = torch.mean(loss_tensor.view(bs, -1), dim=1)
                 loss += new_loss
@@ -424,9 +448,11 @@ def get_nonspade_norm_layer(norm_type='instance'):
         # elif subnorm_type == 'sync_batch':
         #     norm_layer = SynchronizedBatchNorm2d(get_out_channel(layer), affine=True)
         elif subnorm_type == 'instance':
-            norm_layer = nn.InstanceNorm2d(get_out_channel(layer), affine=False)
+            norm_layer = nn.InstanceNorm2d(
+                get_out_channel(layer), affine=False)
         else:
-            raise ValueError('normalization layer %s is not recognized' % subnorm_type)
+            raise ValueError(
+                'normalization layer %s is not recognized' % subnorm_type)
 
         return nn.Sequential(layer, norm_layer)
 

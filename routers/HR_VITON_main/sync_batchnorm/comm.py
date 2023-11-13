@@ -3,13 +3,13 @@
 # Author : Jiayuan Mao
 # Email  : maojiayuan@gmail.com
 # Date   : 27/01/2018
-# 
+#
 # This file is part of Synchronized-BatchNorm-PyTorch.
 # https://github.com/vacancy/Synchronized-BatchNorm-PyTorch
 # Distributed under MIT License.
 
-import queue
 import collections
+import queue
 import threading
 
 __all__ = ['FutureResult', 'SlavePipe', 'SyncMaster']
@@ -40,7 +40,8 @@ class FutureResult(object):
 
 
 _MasterRegistry = collections.namedtuple('MasterRegistry', ['result'])
-_SlavePipeBase = collections.namedtuple('_SlavePipeBase', ['identifier', 'queue', 'result'])
+_SlavePipeBase = collections.namedtuple(
+    '_SlavePipeBase', ['identifier', 'queue', 'result'])
 
 
 class SlavePipe(_SlavePipeBase):

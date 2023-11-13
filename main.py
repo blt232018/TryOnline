@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from loguru import logger
 from uvicorn import run
 
-
 from routers.tryon_tool import api_router
-from loguru import logger
 
 app = FastAPI(title='Fastapi_tools')
 
