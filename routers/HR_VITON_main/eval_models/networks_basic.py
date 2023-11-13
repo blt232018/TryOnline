@@ -37,10 +37,10 @@ class PNetLin(nn.Module):
         if (self.pnet_type in ['vgg', 'vgg16']):
             net_type = pn.vgg16
             self.chns = [64, 128, 256, 512, 512]
-        elif (self.pnet_type == 'alex'):
+        elif self.pnet_type == 'alex':
             net_type = pn.alexnet
             self.chns = [64, 192, 384, 256, 256]
-        elif (self.pnet_type == 'squeeze'):
+        elif self.pnet_type == 'squeeze':
             net_type = pn.squeezenet
             self.chns = [64, 128, 256, 384, 384, 512, 512]
         self.L = len(self.chns)
@@ -48,14 +48,14 @@ class PNetLin(nn.Module):
         self.net = net_type(pretrained=not self.pnet_rand,
                             requires_grad=self.pnet_tune)
 
-        if (lpips):
+        if lpips:
             self.lin0 = NetLinLayer(self.chns[0], use_dropout=use_dropout)
             self.lin1 = NetLinLayer(self.chns[1], use_dropout=use_dropout)
             self.lin2 = NetLinLayer(self.chns[2], use_dropout=use_dropout)
             self.lin3 = NetLinLayer(self.chns[3], use_dropout=use_dropout)
             self.lin4 = NetLinLayer(self.chns[4], use_dropout=use_dropout)
             self.lins = [self.lin0, self.lin1, self.lin2, self.lin3, self.lin4]
-            if (self.pnet_type == 'squeeze'):  # 7 layers for squeezenet
+            if self.pnet_type == 'squeeze':  # 7 layers for squeezenet
                 self.lin5 = NetLinLayer(self.chns[5], use_dropout=use_dropout)
                 self.lin6 = NetLinLayer(self.chns[6], use_dropout=use_dropout)
                 self.lins += [self.lin5, self.lin6]
@@ -72,15 +72,15 @@ class PNetLin(nn.Module):
                 outs0[kk]), util.normalize_tensor(outs1[kk])
             diffs[kk] = (feats0[kk]-feats1[kk])**2
 
-        if (self.lpips):
-            if (self.spatial):
+        if self.lpips:
+            if self.spatial:
                 res = [upsample(self.lins[kk].model(diffs[kk]),
                                 out_H=in0.shape[2]) for kk in range(self.L)]
             else:
                 res = [spatial_average(self.lins[kk].model(
                     diffs[kk]), keepdim=True) for kk in range(self.L)]
         else:
-            if (self.spatial):
+            if self.spatial:
                 res = [upsample(diffs[kk].sum(dim=1, keepdim=True),
                                 out_H=in0.shape[2]) for kk in range(self.L)]
             else:
@@ -91,7 +91,7 @@ class PNetLin(nn.Module):
         for l in range(1, self.L):
             val += res[l]
 
-        if (retPerLayer):
+        if retPerLayer:
             return (val, res)
         else:
             return val
@@ -133,7 +133,7 @@ class Dist2LogitLayer(nn.Module):
                              padding=0, bias=True),]
         layers += [nn.LeakyReLU(0.2, True),]
         layers += [nn.Conv2d(chn_mid, 1, 1, stride=1, padding=0, bias=True),]
-        if (use_sigmoid):
+        if use_sigmoid:
             layers += [nn.Sigmoid(),]
         self.model = nn.Sequential(*layers)
 
@@ -166,19 +166,19 @@ class FakeNet(nn.Module):
 class L2(FakeNet):
 
     def forward(self, in0, in1, retPerLayer=None):
-        if (in0.size()[0] != 1):
+        if in0.size()[0] != 1:
             raise AssertionError
 
-        if (self.colorspace == 'RGB'):
+        if self.colorspace == 'RGB':
             (N, C, X, Y) = in0.size()
             value = torch.mean(torch.mean(torch.mean(
                 (in0-in1)**2, dim=1).view(N, 1, X, Y), dim=2).view(N, 1, 1, Y), dim=3).view(N)
             return value
-        elif (self.colorspace == 'Lab'):
+        elif self.colorspace == 'Lab':
             value = util.l2(util.tensor2np(util.tensor2tensorlab(in0.data, to_norm=False)),
                             util.tensor2np(util.tensor2tensorlab(in1.data, to_norm=False)), range=100.).astype('float')
             ret_var = Variable(torch.Tensor((value,)))
-            if (self.use_gpu):
+            if self.use_gpu:
                 ret_var = ret_var.cuda()
             return ret_var
 
@@ -186,17 +186,17 @@ class L2(FakeNet):
 class DSSIM(FakeNet):
 
     def forward(self, in0, in1, retPerLayer=None):
-        if (in0.size()[0] != 1):
+        if in0.size()[0] != 1:
             raise AssertionError
 
-        if (self.colorspace == 'RGB'):
+        if self.colorspace == 'RGB':
             value = util.dssim(1.*util.tensor2im(in0.data), 1. *
                                util.tensor2im(in1.data), range=255.).astype('float')
-        elif (self.colorspace == 'Lab'):
+        elif self.colorspace == 'Lab':
             value = util.dssim(util.tensor2np(util.tensor2tensorlab(in0.data, to_norm=False)),
                                util.tensor2np(util.tensor2tensorlab(in1.data, to_norm=False)), range=100.).astype('float')
         ret_var = Variable(torch.Tensor((value,)))
-        if (self.use_gpu):
+        if self.use_gpu:
             ret_var = ret_var.cuda()
         return ret_var
 

@@ -126,7 +126,7 @@ def create_network(cls, opt):
     net = cls(opt)
     net.print_network()
     if len(opt.gpu_ids) > 0:
-        if not (torch.cuda.is_available()):
+        if not torch.cuda.is_available():
             raise AssertionError
         net.cuda()
     net.init_weights(opt.init_type, opt.init_variance)

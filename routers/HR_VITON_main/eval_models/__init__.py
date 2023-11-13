@@ -59,7 +59,7 @@ def dssim(p0, p1, range=255.):
 def rgb2lab(in_img, mean_cent=False):
     from skimage import color
     img_lab = color.rgb2lab(in_img)
-    if (mean_cent):
+    if mean_cent:
         img_lab[:, :, 0] = img_lab[:, :, 0]-50
     return img_lab
 
@@ -80,7 +80,7 @@ def tensor2tensorlab(image_tensor, to_norm=True, mc_only=False):
 
     img = tensor2im(image_tensor)
     img_lab = color.rgb2lab(img)
-    if (mc_only):
+    if mc_only:
         img_lab[:, :, 0] = img_lab[:, :, 0]-50
     if (to_norm and not mc_only):
         img_lab[:, :, 0] = img_lab[:, :, 0]-50
@@ -99,7 +99,7 @@ def tensorlab2tensor(lab_tensor, return_inbnd=False):
     lab[:, :, 0] = lab[:, :, 0]+50
 
     rgb_back = 255.*np.clip(color.lab2rgb(lab.astype('float')), 0, 1)
-    if (return_inbnd):
+    if return_inbnd:
         # convert back to lab, see if we match
         lab_back = color.rgb2lab(rgb_back.astype('uint8'))
         mask = 1.*np.isclose(lab_back, lab, atol=2.)
