@@ -344,9 +344,8 @@ class GANLoss(nn.Module):
                 target_tensor = self.get_target_tensor(pred, target_is_real)
                 loss += self.loss(pred, target_tensor)
             return loss
-        else:
-            target_tensor = self.get_target_tensor(input[-1], target_is_real)
-            return self.loss(input[-1], target_tensor)
+        target_tensor = self.get_target_tensor(input[-1], target_is_real)
+        return self.loss(input[-1], target_tensor)
 
 
 class MultiscaleDiscriminator(nn.Module):
@@ -377,8 +376,7 @@ class MultiscaleDiscriminator(nn.Module):
             for i, item in enumerate(model):
                 result.append(item(result[-1]))
             return result[1:]
-        else:
-            return [model(input)]
+        return [model(input)]
 
     def forward(self, input):
         num_D = self.num_D
@@ -461,8 +459,7 @@ class NLayerDiscriminator(nn.Module):
                 model = getattr(self, 'model' + str(n))
                 res.append(model(res[-1]))
             return res[1:]
-        else:
-            return self.model(input)
+        return self.model(input)
 
 
 def save_checkpoint(model, save_path, opt):
