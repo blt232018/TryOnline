@@ -9,7 +9,6 @@ from get_norm_const import D_logit
 from networks import ConditionGenerator, define_D, load_checkpoint
 from tensorboardX import SummaryWriter
 from torchvision.utils import make_grid, save_image
-from tqdm import tqdm
 from utils import *
 
 

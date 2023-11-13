@@ -1,9 +1,6 @@
 import os
-from pdb import set_trace as st
 
 import torch
-from IPython import embed
-from torch.autograd import Variable
 
 
 class BaseModel():

@@ -4,7 +4,6 @@ import os
 import eval_models as models
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as Transforms
 from PIL import Image

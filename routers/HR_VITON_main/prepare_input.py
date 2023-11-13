@@ -10,7 +10,7 @@ from .cp_dataset_test import (CPDataLoader, CPDatasetTest, Image, np, osp,
                               torch, transforms)
 from .test_generator import (ConditionGenerator, F, SPADEGenerator, get_opt,
                              load_checkpoint, load_checkpoint_G, make_grid, nn,
-                             os, remove_overlap, tgm)
+                             remove_overlap, tgm)
 
 
 class DefinedCPDatasetTest(CPDatasetTest):

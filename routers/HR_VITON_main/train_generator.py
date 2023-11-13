@@ -1,6 +1,5 @@
 import argparse
 import os
-import sys
 import time
 
 import eval_models as models

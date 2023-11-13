@@ -1,6 +1,5 @@
 
 import random
-from asyncio import sleep
 from pathlib import Path
 
 from aiofiles import open as aopen
